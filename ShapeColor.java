@@ -1,4 +1,4 @@
-package Paint;
+package OOADPMiniProject;
 import java.awt.Graphics;
 
 public abstract class ShapeColor {

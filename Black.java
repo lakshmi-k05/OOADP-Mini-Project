@@ -1,4 +1,4 @@
-package Paint-Java.Paint;
+package OOADPMiniProject;
 import java.awt.Graphics;
 import java.awt.Color;
 

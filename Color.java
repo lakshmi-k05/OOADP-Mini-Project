@@ -1,4 +1,4 @@
-package Paint;
+package OOADPMiniProject;
 
 public abstract class Color {
 	String color;
