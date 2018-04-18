@@ -65,17 +65,7 @@ public class WindowCreatorNew extends JPanel implements ActionListener
             myDrawingPanel.clearPaint();
         }
     }
-/*  
-    public static void main(String[] args)
-    {
-        JFrame frame = new JFrame();
-        DrawLineOnPanel dlp = new DrawLineOnPanel();
-        frame.add(dlp.DrawLineOnPanel());
-        //frame.setDefaultCloseOperation(EXIT_ON_CLOSE);
-        frame.pack();
-        frame.setVisible( true );
-    }
-*/  
+
     public class DrawingPanel extends JPanel implements MouseListener, MouseMotionListener
     {
         Image image;
