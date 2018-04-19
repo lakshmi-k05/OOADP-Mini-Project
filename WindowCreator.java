@@ -1,17 +1,17 @@
 package OOADPMiniProject;
-import java.awt.Graphics;
+import java.awt.*;
 import javax.swing.*;
-public class WindowCreator extends JPanel{
-	WindowCreator()
-	{
-		
-	}
-	public void paint(Graphics g)
-	{
-		ShapeColor c = new Red("red");
-    	ShapeColor c2 = new Blue("blue");
-    	Shape sq = new Rectangle(600,100,344, 800);
-    	sq.setColor(c,c2);
-    	sq.draw(g);
-	}
+
+public class WindowCreator{
+
+    public static void main(String ad[])
+    {
+    	JFrame jf = new JFrame("You can't handle the code!!");
+        Demo wcn = new Demo();
+        //wcn.DrawLineOnPanel();
+        jf.setContentPane(wcn);
+        jf.setSize(new Dimension(1500,1000));
+        jf.setVisible(true);
+        
+    }
 }
