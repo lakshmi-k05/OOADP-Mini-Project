@@ -2,7 +2,7 @@ package OOADPMiniProject;
 import java.awt.Graphics;
 
 public abstract class Shape {
-	int x,y;
+	int x,y;		//Coordinates on canvas
 	ShapeColor bcolor, fcolor;
 	Shape(int a, int b)
 	{

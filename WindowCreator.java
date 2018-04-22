@@ -6,7 +6,7 @@ public class WindowCreator{
 
     public static void main(String ad[])
     {
-    	JFrame jf = new JFrame("You can't handle the code!!");
+    	JFrame jf = new JFrame("Just Paint It");
         Demo wcn = new Demo();
         //wcn.DrawLineOnPanel();
         jf.setContentPane(wcn);

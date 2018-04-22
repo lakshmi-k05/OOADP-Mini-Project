@@ -7,48 +7,52 @@ import java.awt.image.*;
 public class Demo extends JPanel implements ActionListener
 {
     //CanvasPanel myCanvasPanel;
-	DrawingPanel myDrawingPanel;
+	Canvas myCanvas;
 	ShapeColor fillcolor, linecolor;
 	Shape shape;
-	int chooseColor = 0;
+	int chooseColor = 0;	//For fill,border or freehand
     JPanel buttonPanel, shapePanel;
     JButton btnblue, btnred, btngreen, btnyellow, btnblack, btnwhite;
     JButton btnclear;
+    JButton btnIncSize,btnDecSize;				//Brush Size
     JButton btnsquare, btnborder, btnfill, btntriangle, btncircle, btnfreehand;
     Demo()
     {
-    	DrawLineOnPanel();
+    	DrawFreeHand();
     }
-    public JPanel DrawLineOnPanel()
+    public JPanel DrawFreeHand()
     {
-    	myDrawingPanel = new DrawingPanel();
-        //myDrawingPanel.setLayout(new GridLayou);
-    	myDrawingPanel.setBorder(BorderFactory.createEtchedBorder(Color.black, Color.blue));
+    	myCanvas = new Canvas();
+        
+    	myCanvas.setBorder(BorderFactory.createEtchedBorder(Color.black, Color.blue));
+    	
+    	buttonPanel = new JPanel();
+        buttonPanel.setLayout(new GridLayout(0, 6, 2, 2));
+        buttonPanel.setBorder(BorderFactory.createEtchedBorder(Color.white, Color.blue));
+  
   
     	shapePanel = new JPanel();
     	shapePanel.setLayout(new GridLayout(0, 6, 2, 2));
         shapePanel.setBorder(BorderFactory.createEtchedBorder(Color.white, Color.blue));
         
-        buttonPanel = new JPanel();
-        buttonPanel.setLayout(new GridLayout(0, 6, 2, 2));
-        buttonPanel.setBorder(BorderFactory.createEtchedBorder(Color.white, Color.blue));
-  
-        btnblack = addButton(Color.black, null);
-        btnred = addButton(Color.red, null);
-        btngreen = addButton(Color.green.darker(), null);
-        btnblue = addButton(Color.blue, null);
-        btnyellow = addButton(Color.yellow, null);
-        btnwhite = addButton(Color.white, null);
         
-        btnsquare = addButton(null, "Square");
-        btntriangle = addButton(null, "Triangle");
-        btncircle = addButton(null, "Circle");
+        btnblack = insertButton(Color.black, null);
+        btnred = insertButton(Color.red, null);
+        btngreen = insertButton(Color.green.darker(), null);
+        btnblue = insertButton(Color.blue, null);
+        btnyellow = insertButton(Color.yellow, null);
+        btnwhite = insertButton(Color.white, null);
         
-        btnfill = addButton(null,"FIll");
-        btnborder = addButton(null, "Border");
-        btnfreehand = addButton(null,"FreeHand");
+        btnsquare = insertButton(null, "Square");
+        btntriangle = insertButton(null, "Triangle");
+        btncircle = insertButton(null, "Circle");
         
+        btnfill = insertButton(null,"FIll");
+        btnborder = insertButton(null, "Border");
+        btnfreehand = insertButton(null,"FreeHand");
         
+        btnIncSize = insertButton(null,"Increase Brush Size");
+        btnDecSize = insertButton(null,"Decrease Brush Size");
         
         setLayout(new BorderLayout());
         btnclear = new JButton("Clear");
@@ -60,13 +64,13 @@ public class Demo extends JPanel implements ActionListener
         btnclear.addActionListener(this);
         add("South", btnclear);
         
-        add("Center", myDrawingPanel);
+        add("Center", myCanvas);
         add("North", buttonPanel);
         add("North", shapePanel);
         return this;
 }
   
-    private JButton addButton(Color color, String str)
+    private JButton insertButton(Color color, String str)
     {
         JButton button = new JButton();
         button.setBackground(new Color(230,240,250));
@@ -101,14 +105,18 @@ public class Demo extends JPanel implements ActionListener
     {
     	if (actEv.getSource()==btnclear)
         {
-            myDrawingPanel.clearPaint();
+            myCanvas.clearPaint();
         }
     	String s = actEv.getActionCommand();
     	if (s.equals("Paint") && chooseColor==3)
         {
             JButton button = (JButton)actEv.getSource();
-            myDrawingPanel.setPaintColor(button.getBackground());
+            myCanvas.setPaintColor(button.getBackground());
         }
+    	if(actEv.getSource() == btnIncSize)
+    		myCanvas.increaseBrushSize();
+    	if(actEv.getSource() == btnDecSize)
+    		myCanvas.decreaseBrushSize();
     	
     	if(actEv.getSource()==btnborder)
 		{
@@ -192,14 +200,14 @@ public class Demo extends JPanel implements ActionListener
 			repaint();
 		}
     }
-    public class DrawingPanel extends JPanel implements MouseListener, MouseMotionListener
+    public class Canvas extends JPanel implements MouseListener, MouseMotionListener
     {
         Image image;
-        Graphics2D g2d;
+        Graphics2D myGraphics;
         int brushSize = 3;
-        Point lastPoint;
+        Point last;
   
-        public DrawingPanel()
+        public Canvas()
         {
             setPreferredSize( new Dimension(300, 300) );
             addMouseListener(this);
@@ -214,20 +222,20 @@ public class Demo extends JPanel implements ActionListener
   
         public void mousePressed(MouseEvent e)
         {
-            lastPoint = e.getPoint();
-            draw( lastPoint );
+            last = e.getPoint();
+            draw( last );
         }
   
         public void mouseDragged(MouseEvent e)
         {
-            double xDelta = e.getX() - lastPoint.getX();
-            double yDelta = e.getY() - lastPoint.getY();
-            double delta = Math.max(Math.abs(xDelta), Math.abs(yDelta));
-            double xIncrement = xDelta / delta;
-            double yIncrement = yDelta / delta;
+            double delX = e.getX() - last.getX();
+            double delY = e.getY() - last.getY();
+            double delta = Math.max(Math.abs(delX), Math.abs(delY));
+            double xIncrement = delX / delta;
+            double yIncrement = delY / delta;
   
-            double xStart = lastPoint.getX();
-            double yStart = lastPoint.getY();
+            double xStart = last.getX();
+            double yStart = last.getY();
   
             for (int i = 0; i < delta; i++)
             {
@@ -238,28 +246,28 @@ public class Demo extends JPanel implements ActionListener
             }
   
             draw(e.getPoint());
-            lastPoint = e.getPoint();
+            last = e.getPoint();
         }
   
         private void draw(Point start)
         {
             int x = start.x - (brushSize/2) + 1;
             int y = start.y - (brushSize/2) + 1;
-            g2d.fillOval(x, y, brushSize, brushSize);
+            myGraphics.fillOval(x, y, brushSize, brushSize);
             repaint(x, y, brushSize, brushSize);
         }
   
         public void setPaintColor(Color color)
         {
-            g2d.setColor(color);
+            myGraphics.setColor(color);
         }
   
         public void clearPaint()
         {
-            g2d.setColor( Color.white );
-            g2d.fillRect(0, 0, getWidth(), getHeight());
+            myGraphics.setColor( Color.white );
+            myGraphics.fillRect(0, 0, getWidth(), getHeight());
             repaint();
-            g2d.setColor( Color.black );
+            myGraphics.setColor( Color.black );
         }
   
         public void increaseBrushSize()
@@ -282,12 +290,12 @@ public class Demo extends JPanel implements ActionListener
             if (image == null)
             {
                 image = createImage(getWidth(), getHeight());
-                g2d = (Graphics2D)image.getGraphics();
-                g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
+                myGraphics = (Graphics2D)image.getGraphics();
+                myGraphics.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
                 RenderingHints.VALUE_ANTIALIAS_ON);
-                g2d.setColor(Color.white);
-                g2d.fillRect(0, 0, getWidth(), getHeight());
-                g2d.setColor(Color.black);
+                myGraphics.setColor(Color.white);
+                myGraphics.fillRect(0, 0, getWidth(), getHeight());
+                myGraphics.setColor(Color.black);
             }
   
             java.awt.Rectangle r = g.getClipBounds();
